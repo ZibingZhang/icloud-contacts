@@ -61,6 +61,12 @@ class ContactsService(object):
         self._get_tokens()
         self._update_contact_etag(updated_contact)
         body = {"contacts": [updated_contact]}
+        try:
+            updated_contact.update({
+                "notes": utils.format_notes(updated_contact["notes"])
+            })
+        except (KeyError, json.JSONDecodeError):
+            pass
         params_contacts = dict(self.params)
         params_contacts.update(
             {
@@ -82,7 +88,10 @@ class ContactsService(object):
         """
         self._refresh_client()
         self._get_tokens()
-        for contact in filter(predicate, self.contacts):
+        filtered_contacts = list(filter(predicate, self.contacts))
+        print(f"You are going to process {len(filtered_contacts)} contacts {'(preview)' if preview else ''}")
+        input("Press any key to continue...\n")
+        for contact in filtered_contacts:
             old_contact = dict(contact)
             updated_contact = mapper(contact)
             if old_contact == updated_contact:
@@ -126,7 +135,7 @@ class ContactsService(object):
     def _update_contact_etag(self, contact):
         etag = contact["etag"]
         last_sync_number = int(re.search(r"(?<=^C=)\d+", etag)[0])
-        if last_sync_number + 5 < self.sync_token_number:
+        if last_sync_number + 1 < self.sync_token_number:
             return contact
         else:
             etag = re.sub(r"^C=\d+", f"C={self.sync_token_number}", etag)

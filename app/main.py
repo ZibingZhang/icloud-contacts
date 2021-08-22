@@ -2,7 +2,7 @@ from app.jobs import *
 from app.login import contacts_login
 
 
-job = AddLastName()
+job = ScratchJob()
 
 
 if __name__ == "__main__":
