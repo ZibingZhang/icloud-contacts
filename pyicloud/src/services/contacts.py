@@ -92,7 +92,7 @@ class ContactsService(object):
         print(
             f"You are going to process {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
         )
-        input("Press any key to continue...\n")
+        input("Press enter to continue...\n")
         for contact in filtered_contacts:
             old_contact = dict(contact)
             updated_contact = mapper(contact)

@@ -1,21 +1,17 @@
-from typing import Optional
-from app.notes import Notes
+from app.notes import *
 from app.jobs import BaseJob, NotesBaseJob
 
 
 class ScratchJob(BaseJob):
-    @staticmethod
-    def predicate(contact):
+    def predicate(self, contact):
         return True
 
-    @staticmethod
-    def mapper(contact):
+    def mapper(self, contact):
         return contact
 
 
 class ScratchNotesJob(NotesBaseJob):
-    @staticmethod
-    def predicate(contact):
+    def predicate(self, contact):
         return True
 
     def notes_mapper(self, notes: Optional[Notes]):

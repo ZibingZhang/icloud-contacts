@@ -19,6 +19,19 @@ class Favorite:
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
 @dataclass
+class FriendsFriend:
+    name: Optional[str] = None
+    uuid: Optional[str] = None
+
+
+@dataclass_json(letter_case=LetterCase.SNAKE)
+@dataclass
+class Meta:
+    uuid: Optional[str] = None
+
+
+@dataclass_json(letter_case=LetterCase.SNAKE)
+@dataclass
 class Partner:
     end: Optional[str] = None
     start: Optional[str] = None
@@ -31,4 +44,6 @@ class Notes:
     comment: Optional[str] = None
     education: Optional[List[Education]] = None
     favorite: Optional[Favorite] = None
+    friends_friend: Optional[FriendsFriend] = None
+    meta: Optional[Meta] = None
     partner: Optional[Partner] = None

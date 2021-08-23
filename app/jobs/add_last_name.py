@@ -3,12 +3,10 @@ from app.jobs import BaseJob
 
 
 class AddLastNameJob(BaseJob):
-    @staticmethod
-    def predicate(contact):
+    def predicate(self, contact):
         return contact.get("lastName") is None
 
-    @staticmethod
-    def mapper(contact):
+    def mapper(self, contact):
         print(utils.strip_for_reading(contact))
         name = input("")
         if name == "":
