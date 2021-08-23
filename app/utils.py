@@ -39,4 +39,6 @@ def format_notes(notes):
     if isinstance(notes, dict):
         return json.dumps(notes, indent=2, sort_keys=True, ensure_ascii=False)
     else:
-        return json.dumps(json.loads(notes), indent=2, sort_keys=True, ensure_ascii=False)
+        return json.dumps(
+            json.loads(notes), indent=2, sort_keys=True, ensure_ascii=False
+        )

@@ -2,7 +2,7 @@ from app import utils
 from app.jobs import BaseJob
 
 
-class AddLastName(BaseJob):
+class AddLastNameJob(BaseJob):
     @staticmethod
     def predicate(contact):
         return contact.get("lastName") is None

@@ -62,9 +62,9 @@ class ContactsService(object):
         self._update_contact_etag(updated_contact)
         body = {"contacts": [updated_contact]}
         try:
-            updated_contact.update({
-                "notes": utils.format_notes(updated_contact["notes"])
-            })
+            updated_contact.update(
+                {"notes": utils.format_notes(updated_contact["notes"])}
+            )
         except (KeyError, json.JSONDecodeError):
             pass
         params_contacts = dict(self.params)
@@ -89,7 +89,9 @@ class ContactsService(object):
         self._refresh_client()
         self._get_tokens()
         filtered_contacts = list(filter(predicate, self.contacts))
-        print(f"You are going to process {len(filtered_contacts)} contacts {'(preview)' if preview else ''}")
+        print(
+            f"You are going to process {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
+        )
         input("Press any key to continue...\n")
         for contact in filtered_contacts:
             old_contact = dict(contact)
@@ -100,7 +102,7 @@ class ContactsService(object):
                 time.sleep(delay)
                 self.set(updated_contact)
             out.write(
-                f"Updated {utils.strip_for_reading(old_contact)} to {utils.strip_for_reading(updated_contact)}\n\n"
+                f"Updated {utils.strip_for_reading(old_contact)} to {utils.strip_for_reading(updated_contact)}\n"
             )
 
     def _refresh_client(self):
