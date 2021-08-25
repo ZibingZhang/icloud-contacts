@@ -9,7 +9,9 @@ class ManuallyEditCompanyJob(BaseJob):
         print(
             f'{contact.get("firstName", ""):15s} {contact.get("lastName", ""):15s} {contact.get("companyName", "")}'
         )
-        company_name = input(">>> ")
-        if company_name != "":
+        company_name = input(">>> ").strip()
+        if company_name == "/remove":
+            contact.pop("companyName")
+        elif company_name != "":
             contact.update({"companyName": company_name})
         return contact

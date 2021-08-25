@@ -1,3 +1,4 @@
+from app import utils
 from app.notes import *
 from app.jobs import BaseJob, NotesBaseJob
 
@@ -12,6 +13,7 @@ class ScratchJob(BaseJob):
 
 class ScratchNotesJob(NotesBaseJob):
     def predicate(self, contact):
+        notes = utils.notes_from_contact(contact)
         return True
 
     def notes_mapper(self, notes: Optional[Notes]):

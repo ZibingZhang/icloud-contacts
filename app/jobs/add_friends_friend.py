@@ -4,7 +4,7 @@ from app.notes import *
 from app.jobs import NotesBaseJob
 
 
-class AddFriendsFriend(NotesBaseJob):
+class AddFriendsFriendJob(NotesBaseJob):
     uuids = {}
 
     def predicate(self, contact):
@@ -17,10 +17,10 @@ class AddFriendsFriend(NotesBaseJob):
         return super().mapper(contact)
 
     def notes_mapper(self, notes: Optional[Notes]):
-        uuid = input(">>> ")
+        uuid = input(">>> ").strip()
         if uuid == "":
             return notes
         contact = self.uuids[uuid]
         name = f"{contact.get('firstName')} {contact.get('lastName')}"
-        notes.friends_friend = FriendsFriend(name=name, uuid=uuid)
+        notes.friends_friend = RelatedContact(name=name, uuid=uuid)
         return notes

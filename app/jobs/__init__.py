@@ -1,5 +1,4 @@
 import abc
-import json
 from typing import Optional
 from app import utils
 from app.notes import Notes
@@ -21,12 +20,7 @@ class NotesBaseJob(BaseJob):
         return False
 
     def mapper(self, contact):
-        notes = contact.get("notes")
-        if notes is not None:
-            notes = json.loads(notes)
-            if notes.get("~"):
-                notes["meta"] = notes.pop("~")
-            notes = Notes.from_dict(notes)
+        notes = utils.notes_from_contact(contact)
         updated_notes = self.notes_mapper(notes)
         if updated_notes is not None:
             updated_notes = updated_notes.to_dict()
@@ -42,8 +36,10 @@ class NotesBaseJob(BaseJob):
         pass
 
 
-from app.jobs.scratch import ScratchJob
-from app.jobs.add_friends_friend import AddFriendsFriend
+from app.jobs.scratch import ScratchJob, ScratchNotesJob
+from app.jobs.add_education import AddEducationJob
+from app.jobs.add_education_from_tag import AddEducationFromTagJob
+from app.jobs.add_friends_friend import AddFriendsFriendJob
 from app.jobs.add_last_name import AddLastNameJob
 from app.jobs.format_notes import FormatNotesJob
 from app.jobs.generate_uuid import GenerateUUIDJob

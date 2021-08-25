@@ -8,7 +8,7 @@ class AddLastNameJob(BaseJob):
 
     def mapper(self, contact):
         print(utils.strip_for_reading(contact))
-        name = input("")
+        name = input("").strip()
         if name == "":
             return contact
         elif name.count(";") == 1:

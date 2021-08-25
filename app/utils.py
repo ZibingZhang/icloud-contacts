@@ -1,4 +1,5 @@
 import json
+from app.notes import Notes
 
 
 def strip_for_reading(contact):
@@ -42,3 +43,12 @@ def format_notes(notes):
         return json.dumps(
             json.loads(notes), indent=2, sort_keys=True, ensure_ascii=False
         )
+
+
+def notes_from_contact(contact):
+    notes = contact.get("notes")
+    notes = json.loads(notes)
+    if notes.get("~"):
+        notes["meta"] = notes.pop("~")
+    notes = Notes.from_dict(notes)
+    return notes
