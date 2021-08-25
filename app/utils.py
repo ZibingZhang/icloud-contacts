@@ -1,16 +1,17 @@
 import json
+from app.fields import *
 from app.notes import Notes
 
 
 def strip_for_reading(contact):
     stripped_contact = dict(contact)
     for field in {
-        "isGuardianApproved",
-        "contactId",
-        "normalized",
-        "etag",
-        "whitelisted",
-        "isCompany",
+        CONTACT_ID,
+        E_TAG,
+        IS_COMPANY,
+        IS_GUARDIAN_APPROVED,
+        NORMALIZED,
+        WHITELISTED,
     }:
         stripped_contact.pop(field, None)
     try:
@@ -52,3 +53,7 @@ def notes_from_contact(contact):
         notes["meta"] = notes.pop("~")
     notes = Notes.from_dict(notes)
     return notes
+
+
+def prompt(msg=">>> "):
+    return input(msg).strip()

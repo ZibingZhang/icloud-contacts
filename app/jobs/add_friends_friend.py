@@ -1,5 +1,6 @@
 import json
 from app import utils
+from app.fields import *
 from app.notes import *
 from app.jobs import NotesBaseJob
 
@@ -17,10 +18,10 @@ class AddFriendsFriendJob(NotesBaseJob):
         return super().mapper(contact)
 
     def notes_mapper(self, notes: Optional[Notes]):
-        uuid = input(">>> ").strip()
+        uuid = utils.prompt()
         if uuid == "":
             return notes
         contact = self.uuids[uuid]
-        name = f"{contact.get('firstName')} {contact.get('lastName')}"
+        name = f"{contact.get(FIRST_NAME)} {contact.get(LAST_NAME)}"
         notes.friends_friend = RelatedContact(name=name, uuid=uuid)
         return notes

@@ -17,7 +17,7 @@ class AddEducationJob(NotesBaseJob):
         return super().mapper(contact)
 
     def notes_mapper(self, notes: Optional[Notes]):
-        school = input(">>> ").strip()
+        school = utils.prompt()
         if school == "":
             return notes
         if notes.education is None:

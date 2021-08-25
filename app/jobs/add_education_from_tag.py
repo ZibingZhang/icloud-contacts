@@ -1,4 +1,5 @@
 from app import utils
+from app.fields import *
 from app.notes import *
 from app.jobs import NotesBaseJob
 
@@ -8,7 +9,7 @@ class AddEducationFromTagJob(NotesBaseJob):
 
     def predicate(self, contact):
         return any(
-            map(lambda tag: "SCHOOL" in tag, contact.get("companyName", "").split(", "))
+            map(lambda tag: "SCHOOL" in tag, contact.get(COMPANY_NAME, "").split(", "))
         )
 
     def mapper(self, contact):

@@ -1,3 +1,5 @@
+from app import utils
+from app.fields import *
 from app.jobs import BaseJob
 
 
@@ -7,11 +9,11 @@ class ManuallyEditCompanyJob(BaseJob):
 
     def mapper(self, contact):
         print(
-            f'{contact.get("firstName", ""):15s} {contact.get("lastName", ""):15s} {contact.get("companyName", "")}'
+            f'{contact.get(FIRST_NAME, ""):15s} {contact.get(LAST_NAME, ""):15s} {contact.get(COMPANY_NAME, "")}'
         )
-        company_name = input(">>> ").strip()
+        company_name = utils.prompt()
         if company_name == "/remove":
-            contact.pop("companyName")
+            contact.pop(COMPANY_NAME)
         elif company_name != "":
-            contact.update({"companyName": company_name})
+            contact.update({COMPANY_NAME: company_name})
         return contact
