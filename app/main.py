@@ -5,5 +5,5 @@ from app.contacts import ContactsClient
 if __name__ == "__main__":
     client = ContactsClient()
     job = ScratchJob()
-    job.run(client, preview=False)
+    job.run(client, preview=True)
     client.save("contacts/contacts.txt")

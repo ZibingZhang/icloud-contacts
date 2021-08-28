@@ -6,7 +6,7 @@ from app.jobs import BaseJob, NotesBaseJob
 
 class ScratchJob(BaseJob):
     def predicate(self, contact):
-        return True
+        return False
 
     def mapper(self, contact):
         return contact
