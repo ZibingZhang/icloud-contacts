@@ -89,3 +89,9 @@ def json_to_yaml(json_):
         indent=4,
         # Dumper=Dumper,
     )
+
+
+def print_name_and_company(contact, more=""):
+    print(
+        f'{contact.get(FIRST_NAME, ""):15s}{contact.get(LAST_NAME, ""):15s}{contact.get(COMPANY_NAME, ""):30s}{more}'
+    )

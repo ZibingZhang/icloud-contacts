@@ -12,9 +12,7 @@ class AddFamilyJob(NotesBaseJob):
         )
 
     def mapper(self, contact):
-        print(
-            f"{contact.get('firstName', ''):15s}{contact.get('lastName', ''):15s}{contact.get('companyName', '')}"
-        )
+        utils.print_name_and_company(contact)
         return super().mapper(contact)
 
     def notes_mapper(self, notes: Optional[Notes]):

@@ -46,7 +46,7 @@ class ContactsClient:
         for contact in filtered_contacts:
             old_contact = dict(contact)
             updated_contact = mapper(contact)
-            if old_contact == updated_contact:
+            if updated_contact is None or old_contact == updated_contact:
                 continue
             elif not preview:
                 time.sleep(delay)

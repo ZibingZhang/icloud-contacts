@@ -1,3 +1,4 @@
+BIRTHDAY = "birthday"
 COMPANY_NAME = "companyName"
 CONTACT_ID = "contactId"
 E_TAG = "eTag"

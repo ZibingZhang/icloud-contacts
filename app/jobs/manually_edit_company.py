@@ -8,9 +8,7 @@ class ManuallyEditCompanyJob(BaseJob):
         return False
 
     def mapper(self, contact):
-        print(
-            f'{contact.get(FIRST_NAME, ""):15s} {contact.get(LAST_NAME, ""):15s} {contact.get(COMPANY_NAME, "")}'
-        )
+        utils.print_name_and_company(contact)
         company_name = utils.prompt()
         if company_name == "/remove":
             contact.pop(COMPANY_NAME)

@@ -24,6 +24,7 @@ class JobMeta(type):
                 return predicate(*args, **kwargs)
             except (AttributeError, IndexError, KeyError):
                 return False
+
         return enhanced_predicate
 
     @staticmethod
@@ -33,6 +34,7 @@ class JobMeta(type):
             result = run(self, *args, **kwargs)
             getattr(self, "after_run")(self, *args, **kwargs)
             return result
+
         return enhanced_run
 
     @staticmethod
@@ -97,7 +99,7 @@ from app.jobs.add_education import AddEducationJob
 from app.jobs.add_education_from_tag import AddEducationFromTagJob
 from app.jobs.add_family import AddFamilyJob
 from app.jobs.add_friends_friend import AddFriendsFriendJob
-from app.jobs.add_last_name import AddLastNameJob
+from app.jobs.add_top_level_field import AddTopLevelFieldJob
 from app.jobs.format_notes import FormatNotesJob
 from app.jobs.generate_uuid import GenerateUUIDJob
 from app.jobs.manually_edit_company import ManuallyEditCompanyJob
