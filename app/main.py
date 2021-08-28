@@ -1,5 +1,5 @@
 from app.jobs import *
-from app.contacts import ContactsClient
+from app.cilent import ContactsClient
 
 
 if __name__ == "__main__":
