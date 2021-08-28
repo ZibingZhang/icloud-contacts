@@ -1,4 +1,4 @@
-requests>=2.20.0
+requests==2.26.0
 keyring>=8.0,<=9.3.1
 keyrings.alt>=1.0,<=3.2.0
 click>=6.0,<=7.1.1
@@ -8,3 +8,4 @@ pytz>=2019.3
 certifi>=2019.11.28
 future>=0.18.2
 dataclasses-json==0.5.4
+PyYAML==5.4.1
