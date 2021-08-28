@@ -25,7 +25,14 @@ class ContactsClient:
             for contact in contacts:
                 f.write(f"{json.dumps(contact)}\n")
 
-    def filter_map(self, predicate, mapper, preview=False, delay=0.1, out=sys.stdout):
+    def filter_map(
+        self,
+        predicate,
+        mapper,
+        preview=False,
+        delay=0.1,
+        out=sys.stdout,
+    ):
         """
         Updates many contacts.
         """
@@ -59,7 +66,9 @@ class ContactsClient:
 
         if api.requires_2fa:
             print("Two-factor authentication required.")
-            code = input("Enter the code you received of one of your approved devices: ")
+            code = input(
+                "Enter the code you received of one of your approved devices: "
+            )
             result = api.validate_2fa_code(code)
             print("Code validation result: %s" % result)
 
@@ -85,7 +94,12 @@ class ContactsClient:
             for i, device in enumerate(devices):
                 print(
                     "  %s: %s"
-                    % (i, device.get("deviceName", "SMS to %s" % device.get("phoneNumber")))
+                    % (
+                        i,
+                        device.get(
+                            "deviceName", "SMS to %s" % device.get("phoneNumber")
+                        ),
+                    )
                 )
 
             device = click.prompt("Which device would you like to use?", default=0)

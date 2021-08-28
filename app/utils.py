@@ -67,7 +67,9 @@ def format_notes(notes):
         notes_json = json.dumps(utils.delete_none(notes_dict), ensure_ascii=False)
         output = json_to_yaml(notes_json)
     if notes_meta is not None:
-        notes_meta_json = json.dumps({"meta": utils.delete_none(notes_meta)}, ensure_ascii=False)
+        notes_meta_json = json.dumps(
+            {"meta": utils.delete_none(notes_meta)}, ensure_ascii=False
+        )
         output += json_to_yaml(notes_meta_json)
     return output
 

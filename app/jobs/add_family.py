@@ -5,13 +5,11 @@ from app.notes import *
 
 
 class AddFamilyJob(NotesBaseJob):
-    uuids = {}
-
     def predicate(self, contact):
-        notes = utils.notes_from_contact(contact)
-        uuid = notes.meta.uuid
-        self.uuids[uuid] = contact
-        return contact.get(FIRST_NAME) == "FIRST NAME" and contact.get(LAST_NAME) == "LAST NAME"
+        return (
+            contact.get(FIRST_NAME) == "FIRST NAME"
+            and contact.get(LAST_NAME) == "LAST NAME"
+        )
 
     def mapper(self, contact):
         print(
@@ -53,6 +51,7 @@ class AddFamilyJob(NotesBaseJob):
             notes.family.mother = RelatedContact(name=name, uuid=uuid)
         else:
             import sys
+
             sys.exit(1)
         return notes
 

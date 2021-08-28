@@ -5,12 +5,7 @@ from app.notes import *
 
 
 class AddFriendsFriendJob(NotesBaseJob):
-    uuids = {}
-
     def predicate(self, contact):
-        notes = utils.notes_from_contact(contact)
-        uuid = notes.meta.uuid
-        self.uuids[uuid] = contact
         return False
 
     def mapper(self, contact):
