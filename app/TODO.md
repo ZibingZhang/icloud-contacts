@@ -1,4 +1,3 @@
 - job to trim names
-- store backups with timestamp in sep dir
 - text file for relationships
 - none of my info / family's relationship info is in there
