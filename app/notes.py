@@ -15,6 +15,7 @@ class RelatedContact:
 class School:
     grad_year: Optional[int] = None
     major: Optional[str] = None
+    minor: Optional[str] = None
     name: Optional[str] = None
 
 
