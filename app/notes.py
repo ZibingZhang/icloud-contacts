@@ -1,6 +1,13 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import List, Optional
 from dataclasses_json import dataclass_json, LetterCase
+
+
+@dataclass_json(letter_case=LetterCase.SNAKE)
+@dataclass
+class RelatedContact:
+    name: Optional[str] = None
+    uuid: Optional[str] = None
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
@@ -21,16 +28,21 @@ class Education:
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
 @dataclass
-class Favorite:
-    candy: Optional[str] = None
-    color: Optional[str] = None
+class Family:
+    brothers: Optional[List[RelatedContact]] = None
+    cousins: Optional[List[RelatedContact]] = None
+    daughters: Optional[List[RelatedContact]] = None
+    father: Optional[RelatedContact] = None
+    mother: Optional[RelatedContact] = None
+    sisters: Optional[List[RelatedContact]] = None
+    sons: Optional[List[RelatedContact]] = None
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
 @dataclass
-class RelatedContact:
-    name: Optional[str] = None
-    uuid: Optional[str] = None
+class Favorite:
+    candy: Optional[str] = None
+    color: Optional[str] = None
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
@@ -52,6 +64,7 @@ class Notes:
     chinese_name: Optional[str] = None
     comment: Optional[str] = None
     education: Optional[Education] = None
+    family: Optional[Family] = None
     favorite: Optional[Favorite] = None
     friends_friend: Optional[RelatedContact] = None
     meta: Optional[Meta] = None

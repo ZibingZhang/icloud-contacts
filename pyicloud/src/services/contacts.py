@@ -2,8 +2,6 @@
 from __future__ import absolute_import
 import json
 import re
-import sys
-import time
 from app import utils
 
 
@@ -38,27 +36,11 @@ class ContactsService(object):
     def sync_token(self):
         return f"{self.sync_token_prefix}{self.sync_token_number}"
 
-    def all(self):
-        """
-        Retrieves all contacts.
-        """
-        self._refresh_client()
-        return self.contacts
-
-    def save(self, filename):
-        """
-        Saves all contacts to a file.
-        """
-        self._refresh_client()
-        with open(filename, "w") as f:
-            for contact in self.contacts:
-                f.write(f"{json.dumps(contact)}\n")
-
     def set(self, updated_contact):
         """
         Updates a contact.
         """
-        self._get_tokens()
+        self.refresh_tokens()
         self._update_contact_etag(updated_contact)
         body = {"contacts": [updated_contact]}
         try:
@@ -82,31 +64,11 @@ class ContactsService(object):
         )
         self._update_sync_token(req.json()["syncToken"])
 
-    def filter_map(self, predicate, mapper, delay=0.1, preview=False, out=sys.stdout):
+    def refresh_contacts(self):
         """
-        Updates many contacts.
+        Updates the services contacts.
         """
-        self._refresh_client()
-        self._get_tokens()
-        filtered_contacts = list(filter(predicate, self.contacts))
-        print(
-            f"You are going to process {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
-        )
-        input("Press enter to continue...\n")
-        for contact in filtered_contacts:
-            old_contact = dict(contact)
-            updated_contact = mapper(contact)
-            if old_contact == updated_contact:
-                continue
-            elif not preview:
-                time.sleep(delay)
-                self.set(updated_contact)
-            out.write(
-                f"Updated {utils.strip_for_reading(old_contact)} to {utils.strip_for_reading(updated_contact)}\n"
-            )
-
-    def _refresh_client(self):
-        self._get_tokens()
+        self.refresh_tokens()
         params_contacts = dict(self.params)
         params_contacts.update(
             {
@@ -119,7 +81,10 @@ class ContactsService(object):
         resp = self.session.get(self._contacts_next_url, params=params_contacts)
         self.contacts = resp.json()["contacts"]
 
-    def _get_tokens(self):
+    def refresh_tokens(self):
+        """
+        Updates the services tokens.
+        """
         params_contacts = dict(self.params)
         params_contacts.update(
             {

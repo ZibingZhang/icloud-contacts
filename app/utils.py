@@ -1,6 +1,24 @@
 import json
+import yaml
+from app import utils
 from app.fields import *
-from app.notes import Notes
+from app.notes import *
+
+
+# puts keys on new line with additional indentation
+class Dumper(yaml.Dumper):
+    last_indent = 0
+    new_line = False
+
+    def write_plain(self, text, split=True):
+        if self.indent == self.last_indent:
+            if self.new_line:
+                self.stream.write("\n" + (self.indent - 1) * " ")
+            self.new_line = not self.new_line
+        else:
+            self.last_indent = self.indent
+            self.new_line = True
+        super().write_plain(text, split)
 
 
 def strip_for_reading(contact):
@@ -17,7 +35,7 @@ def strip_for_reading(contact):
     try:
         notes = contact["notes"]
         if not isinstance(notes, dict):
-            notes = json.loads(notes)
+            notes = dict(yaml.safe_load(notes))
         stripped_contact["notes"] = json.dumps(notes, ensure_ascii=False)
     except (KeyError, json.JSONDecodeError):
         pass
@@ -38,22 +56,34 @@ def delete_none(dict_):
 
 
 def format_notes(notes):
-    if isinstance(notes, dict):
-        return json.dumps(notes, indent=2, sort_keys=True, ensure_ascii=False)
+    notes_dict = notes if isinstance(notes, dict) else json.loads(notes)
+    try:
+        notes_meta = notes_dict.pop("meta")
+    except KeyError:
+        notes_meta = None
+    if len(notes_dict.keys()) == 0:
+        output = ""
     else:
-        return json.dumps(
-            json.loads(notes), indent=2, sort_keys=True, ensure_ascii=False
-        )
+        notes_json = json.dumps(utils.delete_none(notes_dict), ensure_ascii=False)
+        output = json_to_yaml(notes_json)
+    if notes_meta is not None:
+        notes_meta_json = json.dumps({"meta": utils.delete_none(notes_meta)}, ensure_ascii=False)
+        output += json_to_yaml(notes_meta_json)
+    return output
 
 
 def notes_from_contact(contact):
-    notes = contact.get("notes")
-    notes = json.loads(notes)
-    if notes.get("~"):
-        notes["meta"] = notes.pop("~")
-    notes = Notes.from_dict(notes)
-    return notes
+    return Notes.from_dict(yaml.safe_load(contact.get("notes")))
 
 
 def prompt(msg=">>> "):
     return input(msg).strip()
+
+
+def json_to_yaml(json_):
+    return yaml.dump(
+        yaml.safe_load(json_),
+        allow_unicode=True,
+        indent=4,
+        # Dumper=Dumper,
+    )

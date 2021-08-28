@@ -1,15 +1,15 @@
-import json
 from app import utils
 from app.fields import *
-from app.notes import *
 from app.jobs import NotesBaseJob
+from app.notes import *
 
 
 class AddFriendsFriendJob(NotesBaseJob):
     uuids = {}
 
     def predicate(self, contact):
-        uuid = json.loads(contact["notes"])["~"]["uuid"]
+        notes = utils.notes_from_contact(contact)
+        uuid = notes.meta.uuid
         self.uuids[uuid] = contact
         return False
 

@@ -1,4 +1,5 @@
 from app import utils
+from app.fields import *
 from app.notes import *
 from app.jobs import BaseJob, NotesBaseJob
 

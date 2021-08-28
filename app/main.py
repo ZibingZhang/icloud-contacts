@@ -1,11 +1,9 @@
 from app.jobs import *
-from app.login import contacts_login
-
-
-job = ScratchJob()
+from app.contacts import ContactsClient
 
 
 if __name__ == "__main__":
-    api = contacts_login()
-    api.filter_map(job.predicate, job.mapper, preview=True)
-    api.save("contacts.txt")
+    client = ContactsClient()
+    job = ScratchJob()
+    job.run(client, preview=False)
+    client.save("contacts.txt")
