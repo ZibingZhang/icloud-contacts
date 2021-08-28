@@ -8,21 +8,32 @@ class JobMeta(type):
     # https://stackoverflow.com/questions/44029167/how-to-run-a-method-before-after-all-class-function-calls-with-arguments-passed/
     # https://stackoverflow.com/questions/392160/what-are-some-concrete-use-cases-for-metaclasses
     def __new__(mcs, name, bases, dct) -> Any:
-        def wrap_run(fn):
-            def enhanced_run(self, *args, **kwargs):
-                getattr(self, "before_run")(self, *args, **kwargs)
-                result = fn(self, *args, **kwargs)
-                getattr(self, "after_run")(self, *args, **kwargs)
-                return result
-
-            return enhanced_run
-
+        if "predicate" in dct:
+            dct["predicate"] = JobMeta._wrap_predicate(dct["predicate"])
         if "run" in dct:
             dct["before_run"] = JobMeta._get_required_method("before_run", bases, dct)
             dct["after_run"] = JobMeta._get_required_method("after_run", bases, dct)
-            dct["run"] = wrap_run(dct["run"])
+            dct["run"] = JobMeta._wrap_run(dct["run"])
 
         return super().__new__(mcs, name, bases, dct)
+
+    @staticmethod
+    def _wrap_predicate(predicate):
+        def enhanced_predicate(*args, **kwargs):
+            try:
+                return predicate(*args, **kwargs)
+            except (AttributeError, IndexError, KeyError):
+                return False
+        return enhanced_predicate
+
+    @staticmethod
+    def _wrap_run(run):
+        def enhanced_run(self, *args, **kwargs):
+            getattr(self, "before_run")(self, *args, **kwargs)
+            result = run(self, *args, **kwargs)
+            getattr(self, "after_run")(self, *args, **kwargs)
+            return result
+        return enhanced_run
 
     @staticmethod
     def _get_required_method(name, bases, dct):
