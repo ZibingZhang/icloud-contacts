@@ -76,11 +76,11 @@ class Notes:
     partner: Optional[Partner] = None
 
 
-def notes_decoder(notes):
+def notes_decoder(notes: str) -> Notes:
     return Notes.from_dict(yaml.safe_load(notes))
 
 
-def notes_encoder(notes):
+def notes_encoder(notes: Notes) -> str:
     return utils.format_notes(notes)
 
 

@@ -1,12 +1,10 @@
 from app import config
-from app.contact import (
-    Group,
-)
+from app.contact import Group
 from app.jobs import BaseJob
 
 
 class SyncGroupsJob(BaseJob):
-    def run(self, preview=True):
+    def run(self, preview: bool = True) -> None:
         existing_groups = self.client.groups()
         existing_group_names = map(lambda group: group.name, existing_groups)
         for group_def in config.GROUP_DEFINITIONS:

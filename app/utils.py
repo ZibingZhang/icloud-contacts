@@ -1,6 +1,11 @@
+from typing import Union
 import json
+import typing
 import uuid
 import yaml
+
+if typing.TYPE_CHECKING:
+    from app.contact import Contact, Notes
 
 
 # puts keys on new line with additional indentation
@@ -19,7 +24,7 @@ class Dumper(yaml.Dumper):
         super().write_plain(text, split)
 
 
-def json_for_reading(contact):
+def json_for_reading(contact: "Contact") -> dict:
     stripped_contact = delete_none(contact.to_dict())
     for field in {
         "contactId",
@@ -35,7 +40,7 @@ def json_for_reading(contact):
 
 
 # https://stackoverflow.com/questions/33797126/proper-way-to-remove-keys-in-dictionary-with-none-values-in-python
-def delete_none(dict_):
+def delete_none(dict_: dict) -> dict:
     for key, value in list(dict_.items()):
         if isinstance(value, dict):
             delete_none(value)
@@ -47,7 +52,7 @@ def delete_none(dict_):
     return dict_
 
 
-def format_notes(notes):
+def format_notes(notes: Union[dict, "Notes"]) -> str:
     notes_dict = notes if isinstance(notes, dict) else notes.to_dict()
     notes_dict = delete_none(notes_dict)
 
@@ -71,11 +76,11 @@ def format_notes(notes):
     return output
 
 
-def prompt(msg=">>> "):
+def prompt(msg: str = ">>> ") -> str:
     return input(msg).strip()
 
 
-def json_to_yaml(json_):
+def json_to_yaml(json_: str) -> str:
     return yaml.dump(
         yaml.safe_load(json_),
         allow_unicode=True,
@@ -84,15 +89,15 @@ def json_to_yaml(json_):
     )
 
 
-def print_name_and_company(contact, more=""):
+def print_name_and_company(contact: "Contact", more: str = "") -> None:
     print(
         f"{str(contact.first_name):15s}{str(contact.last_name):15s}{str(contact.company_name):40s}{more}"
     )
 
 
-def generate_uuid():
+def generate_uuid() -> str:
     return str(uuid.uuid4())[:13]
 
 
-def contact_to_json(contact):
+def contact_to_json(contact: "Contact") -> str:
     return json.dumps(delete_none(contact.to_dict()))

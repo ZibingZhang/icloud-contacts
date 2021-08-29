@@ -1,18 +1,20 @@
+import typing
+from typing import Optional
 from app import utils
-from app.contact import (
-    Education,
-    School,
-)
+from app.contact import Education, School
 from app.jobs import BaseJob
+
+if typing.TYPE_CHECKING:
+    from app.contact import Contact
 
 
 class AddEducationJob(BaseJob):
     school = Education()
 
-    def predicate(self, contact):
+    def predicate(self, contact: "Contact") -> bool:
         return contact.notes.education is None
 
-    def mapper(self, contact):
+    def mapper(self, contact: "Contact") -> Optional["Contact"]:
         utils.print_name_and_company(contact)
         education = contact.notes.education
         school = utils.prompt()

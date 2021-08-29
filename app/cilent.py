@@ -1,6 +1,8 @@
+from typing import Callable, List, TextIO
 import json
 import sys
 import time
+import typing
 from app import config
 from app import utils
 from app.contact import (
@@ -11,24 +13,27 @@ from app.contact import (
 )
 from pyicloud.src import PyiCloudService
 
+if typing.TYPE_CHECKING:
+    from pyicloud.src.services.contacts import ContactsService
+
 
 class ContactsClient:
-    def __init__(self):
+    def __init__(self) -> None:
         self.service = self._login()
         self._contacts = []
         self._groups = []
 
-    def contacts(self, refresh=False):
+    def contacts(self, refresh: bool = False) -> List[Contact]:
         if len(self._contacts) == 0 or refresh:
             self._refresh_contacts()
         return self._contacts
 
-    def groups(self, refresh=False):
+    def groups(self, refresh: bool = False) -> List[Group]:
         if len(self._groups) == 0 or refresh:
             self._refresh_groups()
         return self._groups
 
-    def create(self, contact):
+    def create(self, contact: Contact) -> None:
         """
         Create a contact.
         """
@@ -36,24 +41,23 @@ class ContactsClient:
         contact_dict = self._contact_to_dict(contact)
         self.service.create(contact_dict)
 
-    def read(self, refresh=False):
+    def read(self, refresh: bool = False) -> List[Contact]:
         """
         Fetches all the contacts.
         """
-        self._refresh()
-        return self._contacts
+        return self.contacts(refresh=refresh)
 
-    def update(self, contact):
+    def update(self, contact: Contact) -> None:
         contact_dict = self._contact_to_dict(contact)
         self.service.update(contact_dict)
 
-    def create_group(self, group):
+    def create_group(self, group: Group) -> None:
         self.service.create_group(group.to_dict())
 
-    def delete_group(self, group):
+    def delete_group(self, group: Group) -> None:
         self.service.delete_group(group.to_dict())
 
-    def save(self, filename):
+    def save(self, filename: str) -> None:
         """
         Saves all contacts to a file.
         """
@@ -64,12 +68,12 @@ class ContactsClient:
 
     def filter_map(
         self,
-        predicate,
-        mapper,
-        preview=False,
-        delay=0.1,
-        out=sys.stdout,
-    ):
+        predicate: Callable[[Contact], bool],
+        mapper: Callable[[Contact], Contact],
+        preview: bool = False,
+        delay: float = 0.1,
+        out: TextIO = sys.stdout,
+    ) -> None:
         """
         Updates many contacts.
         """
@@ -90,19 +94,19 @@ class ContactsClient:
                 f"Updated {utils.json_for_reading(old_contact)} to {utils.json_for_reading(updated_contact)}\n"
             )
 
-    def _refresh(self):
+    def _refresh(self) -> None:
         self.service.refresh()
         self._refresh_contacts()
         self._refresh_groups()
 
-    def _refresh_contacts(self):
+    def _refresh_contacts(self) -> None:
         self._contacts = list(map(Contact.from_dict, self.service.contacts))
 
-    def _refresh_groups(self):
+    def _refresh_groups(self) -> None:
         self._groups = list(map(Group.from_dict, self.service.groups))
 
     @staticmethod
-    def _login():
+    def _login() -> "ContactsService":
         username = config.USERNAME
         password = config.PASSWORD
 
@@ -160,7 +164,7 @@ class ContactsClient:
         return api.contacts
 
     @staticmethod
-    def _contact_to_dict(contact):
+    def _contact_to_dict(contact: Contact) -> dict:
         formatted_contact = contact.to_dict()
         try:
             formatted_contact.update({"notes": utils.format_notes(contact.notes)})
@@ -169,7 +173,7 @@ class ContactsClient:
         return formatted_contact
 
     @staticmethod
-    def _generate_uuid(contact):
+    def _generate_uuid(contact) -> None:
         if contact.notes is None:
             contact.notes = Notes()
         meta = contact.notes.meta
