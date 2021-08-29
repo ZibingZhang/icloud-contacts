@@ -1,6 +1,7 @@
 import json
 import sys
 import time
+from app import config
 from app.contact import *
 from pyicloud.src import PyiCloudService
 
@@ -86,10 +87,8 @@ class ContactsClient:
 
     @staticmethod
     def _login():
-        with open("config.json") as f:
-            config = json.load(f)
-        username = config["username"]
-        password = config["password"]
+        username = config.USERNAME
+        password = config.PASSWORD
 
         api = PyiCloudService(username, password)
 

@@ -20,8 +20,3 @@ def group_condition(contact):
 class GroupDefinition:
     name: str
     condition: callable
-
-
-GROUP_DEFINITIONS = [
-    GroupDefinition("Group Name", group_condition),
-]
