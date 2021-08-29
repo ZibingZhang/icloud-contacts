@@ -2,7 +2,7 @@ import json
 import uuid
 import yaml
 from app import utils
-from app.dataclasses import *
+from app.contact import *
 from app.fields import *
 
 

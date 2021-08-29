@@ -2,7 +2,7 @@ import json
 import sys
 import time
 from app import utils
-from app.dataclasses import *
+from app.contact import *
 from app.fields import *
 from pyicloud.src import PyiCloudService
 

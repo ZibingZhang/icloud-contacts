@@ -1,7 +1,7 @@
 from app import utils
 from app.fields import *
 from app.jobs import NotesBaseJob
-from app.dataclasses import *
+from app.contact import *
 
 
 class AddFriendsFriendJob(NotesBaseJob):

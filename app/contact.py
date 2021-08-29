@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from contact import dataclass
 from typing import List, Optional
-from dataclasses_json import dataclass_json, LetterCase
+from dataclasses_json import dataclass_json, LetterCase, Undefined
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE)
