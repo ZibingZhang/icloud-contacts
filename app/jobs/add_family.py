@@ -53,6 +53,6 @@ class AddFamilyJob(BaseJob):
         return contact
 
     @staticmethod
-    def maybe_add_family(notes: Notes) -> None:
+    def maybe_add_family(notes: "Notes") -> None:
         if notes.family is None:
             notes.family = Family()

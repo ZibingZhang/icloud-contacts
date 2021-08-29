@@ -1,7 +1,15 @@
+from typing import Any, Callable, Dict, List, Optional, Tuple
+import typing
+
+if typing.TYPE_CHECKING:
+    from app.cilent import ContactsClient
+    from app.contact import Contact
+
+
 class JobMeta(type):
     # https://stackoverflow.com/questions/44029167/how-to-run-a-method-before-after-all-class-function-calls-with-arguments-passed/
     # https://stackoverflow.com/questions/392160/what-are-some-concrete-use-cases-for-metaclasses
-    def __new__(mcs, name, bases, dct):
+    def __new__(mcs, name: str, bases: Tuple[type], dct: dict) -> type:
         if "predicate" in dct:
             dct["predicate"] = JobMeta._wrap_predicate(dct["predicate"])
         if "run" in dct:
@@ -12,7 +20,7 @@ class JobMeta(type):
         return super().__new__(mcs, name, bases, dct)
 
     @staticmethod
-    def _wrap_predicate(predicate):
+    def _wrap_predicate(predicate: Callable[[Any], bool]) -> Callable[[Any], bool]:
         def enhanced_predicate(*args, **kwargs):
             try:
                 return predicate(*args, **kwargs)
@@ -22,7 +30,7 @@ class JobMeta(type):
         return enhanced_predicate
 
     @staticmethod
-    def _wrap_run(run):
+    def _wrap_run(run: callable) -> callable:
         def enhanced_run(self, *args, **kwargs):
             getattr(self, "before_run")(self, *args, **kwargs)
             result = run(self, *args, **kwargs)
@@ -32,7 +40,7 @@ class JobMeta(type):
         return enhanced_run
 
     @staticmethod
-    def _get_required_method(name, bases, dct):
+    def _get_required_method(name: str, bases: Tuple[type], dct: dict) -> callable:
         fn = None
         if name in dct:
             fn = dct[name]
@@ -48,26 +56,26 @@ class JobMeta(type):
 
 
 class BaseJob(metaclass=JobMeta):
-    def __init__(self, client):
+    def __init__(self, client: "ContactsClient") -> None:
         self.uuids = {}
         self.client = client
 
-    def run(self, preview=True):
+    def run(self, preview: bool = True) -> Any:
         self.client.filter_map(self.predicate, self.mapper, preview=preview)
 
-    def before_run(self, *args, **kwargs):
+    def before_run(self, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
         for contact in self.client.contacts():
             uuid = contact.notes.meta.uuid
             self.uuids[uuid] = contact
 
-    def after_run(self, *args, **kwargs):
+    def after_run(self, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
         pass
 
-    def predicate(self, contact):
+    def predicate(self, contact: "Contact") -> bool:
         return False
 
-    def mapper(self, contact):
-        return contact
+    def mapper(self, contact: "Contact") -> Optional["Contact"]:
+        pass
 
 
 from app.jobs.add_education import AddEducationJob
