@@ -90,7 +90,7 @@ def json_to_yaml(json_):
 
 def print_name_and_company(contact, more=""):
     print(
-        f'{str(contact.first_name):15s}{str(contact.last_name):15s}{str(contact.company_name):40s}{more}'
+        f"{str(contact.first_name):15s}{str(contact.last_name):15s}{str(contact.company_name):40s}{more}"
     )
 
 

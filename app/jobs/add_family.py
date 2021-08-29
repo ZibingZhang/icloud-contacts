@@ -4,10 +4,7 @@ from app.jobs import BaseJob
 
 class AddFamilyJob(BaseJob):
     def predicate(self, contact):
-        return (
-            contact.first_name == "FIRST NAME"
-            and contact.last_name == "LAST NAME"
-        )
+        return contact.first_name == "FIRST NAME" and contact.last_name == "LAST NAME"
 
     def mapper(self, contact):
         utils.print_name_and_company(contact)

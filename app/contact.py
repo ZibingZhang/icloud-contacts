@@ -125,10 +125,11 @@ class Contact:
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.RAISE)
 @dataclass
 class Group:
-    contact_ids: List[str] = field(default_factory=list)
+    name: str
     group_id: Optional[str] = None
-    name: Optional[str] = None
+    contact_ids: List[str] = field(default_factory=list)
 
-    is_guardian_approved: Optional[bool] = None
     etag: Optional[bool] = None
+    header_positions: Any = None
+    is_guardian_approved: Optional[bool] = None
     whitelisted: Optional[bool] = None

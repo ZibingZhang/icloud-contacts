@@ -133,7 +133,9 @@ class ContactsService(object):
                 "order": "last,first",
             }
         )
-        resp = self.session.get(self._contacts_refresh_url, params=params_contacts).json()
+        resp = self.session.get(
+            self._contacts_refresh_url, params=params_contacts
+        ).json()
         self.pref_token = resp["prefToken"]
         self._update_sync_token(resp["syncToken"])
         self.groups = resp["groups"]
@@ -148,7 +150,9 @@ class ContactsService(object):
                     "offset": "0",
                 }
             )
-            resp = self.session.get(self._contacts_next_url, params=params_contacts).json()
+            resp = self.session.get(
+                self._contacts_next_url, params=params_contacts
+            ).json()
             self.contacts = resp["contacts"]
 
     def _update_sync_token(self, sync_token):
@@ -158,7 +162,7 @@ class ContactsService(object):
     def _update_etag(self, obj):
         etag = obj["etag"]
         last_sync_number = int(re.search(r"(?<=^C=)\d+", etag)[0])
-        if last_sync_number + 1 < self.sync_token_number:
+        if last_sync_number < self.sync_token_number:
             return obj
         else:
             etag = re.sub(r"^C=\d+", f"C={self.sync_token_number}", etag)

@@ -56,8 +56,7 @@ class BaseJob(metaclass=JobMeta):
         self.client.filter_map(self.predicate, self.mapper, preview=preview)
 
     def before_run(self, *args, **kwargs):
-        contacts = self.client.read()
-        for contact in contacts:
+        for contact in self.client.contacts:
             uuid = contact.notes.meta.uuid
             self.uuids[uuid] = contact
 
@@ -79,3 +78,5 @@ from app.jobs.add_top_level_field import AddTopLevelFieldJob
 from app.jobs.format_notes import FormatNotesJob
 from app.jobs.generate_uuid import GenerateUUIDJob
 from app.jobs.manually_edit_company import ManuallyEditCompanyJob
+from app.jobs.scratch import ScratchJob
+from app.jobs.sync_groups import SyncGroupsJob
