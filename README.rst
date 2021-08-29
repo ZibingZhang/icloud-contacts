@@ -13,12 +13,12 @@ You can get all of your contacts using pyicloud, but the module has no way of up
 
 This project allows you to:
 
-- update contacts
+- create and update contacts
+- create and delete groups
 
 If the future, I would like te support:
 
-- creating and deleting contacts
-- creating and deleting groups
+- deleting contacts
 - adding and removing users from groups
 
 Motivation

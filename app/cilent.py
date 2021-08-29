@@ -6,29 +6,37 @@ from pyicloud.src import PyiCloudService
 
 
 class ContactsClient:
-    def __init__(self):
-        self.contacts_service = self._login()
+    def __init__(self, load_contacts=True):
+        self.service = self._login()
         self.contacts = []
+        self.groups = []
+        self._load_contacts = load_contacts
+        self._fetch_from_service()
 
     def create(self, contact):
         """
         Create a contact.
         """
         self._generate_uuid(contact)
-        self._set_required_fields(contact)
-        formatted_contact = self._format_notes(contact)
-        self.contacts_service.create(formatted_contact)
+        contact_dict = self._contact_to_dict(contact)
+        self.service.create(contact_dict)
 
-    def read(self):
+    def read(self, refresh=False):
         """
         Fetches all the contacts.
         """
-        self._refresh_contacts()
+        self._refresh(refresh_contacts=refresh)
         return self.contacts
 
     def update(self, contact):
-        formatted_contact = self._format_notes(contact)
-        self.contacts_service.update(formatted_contact)
+        contact_dict = self._contact_to_dict(contact)
+        self.service.update(contact_dict)
+
+    def create_group(self, group):
+        self.service.create_group(group.to_dict())
+
+    def delete_group(self, group):
+        self.service.delete_group(group.to_dict())
 
     def save(self, filename):
         """
@@ -50,8 +58,6 @@ class ContactsClient:
         """
         Updates many contacts.
         """
-        self._refresh_contacts()
-        self._refresh_tokens()
         filtered_contacts = list(filter(predicate, self.contacts))
         print(
             f"You are processing {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
@@ -69,12 +75,14 @@ class ContactsClient:
                 f"Updated {utils.json_for_reading(old_contact)} to {utils.json_for_reading(updated_contact)}\n"
             )
 
-    def _refresh_contacts(self):
-        self.contacts_service.refresh_contacts()
-        self.contacts = list(map(Contact.from_dict, self.contacts_service.contacts))
+    def _refresh(self, refresh_contacts=False):
+        self.service.refresh(refresh_contacts=refresh_contacts)
+        self._fetch_from_service()
 
-    def _refresh_tokens(self):
-        self.contacts_service.refresh_tokens()
+    def _fetch_from_service(self):
+        if self._load_contacts:
+            self.contacts = list(map(Contact.from_dict, self.service.contacts))
+        self.groups = list(map(Group.from_dict, self.service.groups))
 
     @staticmethod
     def _login():
@@ -137,8 +145,8 @@ class ContactsClient:
         return api.contacts
 
     @staticmethod
-    def _format_notes(contact):
-        formatted_contact = dict(contact)
+    def _contact_to_dict(contact):
+        formatted_contact = contact.to_dict()
         try:
             formatted_contact.update({"notes": utils.format_notes(contact.notes)})
         except (KeyError, json.JSONDecodeError):
@@ -147,13 +155,11 @@ class ContactsClient:
 
     @staticmethod
     def _generate_uuid(contact):
+        if contact.notes is None:
+            contact.notes = Notes()
         meta = contact.notes.meta
         if meta is None:
             meta = Meta()
         if meta.uuid is None:
             meta.uuid = utils.generate_uuid()
         contact.notes.meta = meta
-
-    @staticmethod
-    def _set_required_fields(contact):
-        contact.is_company = False

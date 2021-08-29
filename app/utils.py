@@ -48,7 +48,7 @@ def delete_none(dict_):
 
 
 def format_notes(notes):
-    notes_dict = notes.to_dict()
+    notes_dict = notes if isinstance(notes, dict) else notes.to_dict()
     notes_dict = delete_none(notes_dict)
 
     try:
