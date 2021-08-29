@@ -1,6 +1,6 @@
 from app.groups import (
-  GroupDefinition,
-  group_condition,
+    GroupDefinition,
+    group_condition,
 )
 
 # Login information
