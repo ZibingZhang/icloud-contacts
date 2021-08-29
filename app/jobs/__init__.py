@@ -83,6 +83,7 @@ from app.jobs.add_education_from_tag import AddEducationFromTagJob
 from app.jobs.add_family import AddFamilyJob
 from app.jobs.add_friends_friend import AddFriendsFriendJob
 from app.jobs.add_top_level_field import AddTopLevelFieldJob
+from app.jobs.format_phone_numbers import FormatPhoneNumberJob
 from app.jobs.format_notes import FormatNotesJob
 from app.jobs.generate_uuid import GenerateUUIDJob
 from app.jobs.manually_edit_company import ManuallyEditCompanyJob

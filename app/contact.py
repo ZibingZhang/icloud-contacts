@@ -1,9 +1,20 @@
 from dataclasses import dataclass, field
-from typing import Any, List, Optional
+from enum import Enum
+from typing import Any, Callable, List, Optional
 from dataclasses_json import LetterCase, Undefined, dataclass_json
 from dataclasses_json import config as metadata
 import yaml
 from app import utils
+
+
+def reflect_none(fn: Callable[[Any], Any]) -> Callable[[Any], Any]:
+    def wrapped_fn(arg):
+        if arg is None:
+            return None
+        else:
+            return fn(arg)
+
+    return wrapped_fn
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
@@ -76,12 +87,43 @@ class Notes:
     partner: Optional[Partner] = None
 
 
+@reflect_none
 def notes_decoder(notes: str) -> Notes:
     return Notes.from_dict(yaml.safe_load(notes))
 
 
+@reflect_none
 def notes_encoder(notes: Notes) -> str:
     return utils.format_notes(notes)
+
+
+class PhoneLabel(Enum):
+    HOME = "HOME"
+    HOME_FAX = "HOME FAX"
+    IPHONE = "IPHONE"
+    MAIN = "MAIN"
+    MOBILE = "MOBILE"
+    OTHER = "OTHER"
+    PAGER = "PAGER"
+    WORK = "WORK"
+    WORK_FAX = "WORK FAX"
+
+
+@dataclass_json(undefined=Undefined.RAISE)
+@dataclass
+class Phone:
+    field: str
+    label: Optional[str] = None
+
+
+@reflect_none
+def phones_decoder(phones: Optional[List[dict]]) -> Optional[List[Phone]]:
+    return list(map(Phone.from_dict, phones))
+
+
+@reflect_none
+def phones_encoder(phones: List[Phone]) -> List[dict]:
+    return list(map(Phone.to_dict, phones))
 
 
 @dataclass_json(letter_case=LetterCase.CAMEL, undefined=Undefined.RAISE)
@@ -104,7 +146,9 @@ class Contact:
 
     dates: Any = None
     email_addresses: Any = None
-    phones: Any = None
+    phones: Optional[Phone] = field(
+        default=None, metadata=metadata(decoder=phones_decoder, encoder=phones_encoder)
+    )
     IMs: Any = field(default=None, metadata=metadata(letter_case=LetterCase.PASCAL))
     profiles: Any = None
     related_names: Any = None
