@@ -1,4 +1,8 @@
-from app.contact import *
+from app import utils
+from app.contact import (
+    Meta,
+    Notes,
+)
 from app.jobs import BaseJob
 
 

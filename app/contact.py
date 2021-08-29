@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Any, List, Optional
-from dataclasses_json import LetterCase, Undefined, config, dataclass_json
+from dataclasses_json import LetterCase, Undefined, dataclass_json
+from dataclasses_json import config as metadata
 import yaml
 from app import utils
 
@@ -103,7 +104,7 @@ class Contact:
     dates: Any = None
     email_addresses: Any = None
     phones: Any = None
-    IMs: Any = field(default=None, metadata=config(letter_case=LetterCase.PASCAL))
+    IMs: Any = field(default=None, metadata=metadata(letter_case=LetterCase.PASCAL))
     profiles: Any = None
     related_names: Any = None
     street_addresses: Any = None
@@ -111,7 +112,7 @@ class Contact:
 
     birthday: Optional[str] = None
     notes: Optional[Notes] = field(
-        default=None, metadata=config(decoder=notes_decoder, encoder=notes_encoder)
+        default=None, metadata=metadata(decoder=notes_decoder, encoder=notes_encoder)
     )
 
     contact_id: Optional[str] = None

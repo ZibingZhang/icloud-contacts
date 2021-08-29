@@ -1,6 +1,6 @@
 import json
 import uuid
-from app.contact import *
+import yaml
 
 
 # puts keys on new line with additional indentation
@@ -69,10 +69,6 @@ def format_notes(notes):
         output += json_to_yaml(notes_meta_json)
 
     return output
-
-
-def notes_from_contact(contact):
-    return Notes.from_dict(yaml.safe_load(contact.get("notes")))
 
 
 def prompt(msg=">>> "):

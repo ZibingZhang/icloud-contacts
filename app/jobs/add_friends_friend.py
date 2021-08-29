@@ -1,5 +1,8 @@
+from app import utils
+from app.contact import (
+    RelatedContact,
+)
 from app.jobs import BaseJob
-from app.contact import *
 
 
 class AddFriendsFriendJob(BaseJob):

@@ -1,4 +1,5 @@
-from app.contact import *
+from app import utils
+from app.contact import Education
 from app.jobs import BaseJob
 
 

@@ -2,7 +2,13 @@ import json
 import sys
 import time
 from app import config
-from app.contact import *
+from app import utils
+from app.contact import (
+    Contact,
+    Group,
+    Meta,
+    Notes,
+)
 from pyicloud.src import PyiCloudService
 
 
