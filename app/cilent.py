@@ -2,6 +2,8 @@ import json
 import sys
 import time
 from app import utils
+from app.fields import *
+from app.notes import *
 from pyicloud.src import PyiCloudService
 
 
@@ -9,18 +11,31 @@ class ContactsClient:
     def __init__(self):
         self.contacts_service = self._login()
 
-    def all(self):
+    def create(self, contact):
+        """
+        Create a contact.
+        """
+        self._generate_uuid(contact)
+        self._set_required_fields(contact)
+        formatted_contact = self._format_notes(contact)
+        self.contacts_service.create(formatted_contact)
+
+    def read(self):
         """
         Fetches all the contacts.
         """
         self.contacts_service.refresh_contacts()
         return self.contacts_service.contacts
 
+    def update(self, contact):
+        formatted_contact = self._format_notes(contact)
+        self.contacts_service.update(formatted_contact)
+
     def save(self, filename):
         """
         Saves all contacts to a file.
         """
-        contacts = self.all()
+        contacts = self.read()
         with open(filename, "w") as f:
             for contact in contacts:
                 f.write(f"{json.dumps(contact)}\n")
@@ -50,7 +65,7 @@ class ContactsClient:
                 continue
             elif not preview:
                 time.sleep(delay)
-                self.contacts_service.set(updated_contact)
+                self.update(updated_contact)
             out.write(
                 f"Updated {utils.strip_for_reading(old_contact)} to {utils.strip_for_reading(updated_contact)}\n"
             )
@@ -114,3 +129,25 @@ class ContactsClient:
                 sys.exit(1)
 
         return api.contacts
+
+    @staticmethod
+    def _format_notes(contact):
+        formatted_contact = dict(contact)
+        try:
+            formatted_contact.update({"notes": utils.format_notes(contact["notes"])})
+        except (KeyError, json.JSONDecodeError):
+            pass
+        return formatted_contact
+
+    @staticmethod
+    def _generate_uuid(contact):
+        notes = contact.get(NOTES, Notes())
+        if notes.meta is None:
+            notes.meta = Meta()
+        if notes.meta.uuid is None:
+            notes.meta.uuid = utils.generate_uuid()
+        contact[NOTES] = notes
+
+    @staticmethod
+    def _set_required_fields(contact):
+        contact[IS_COMPANY] = False

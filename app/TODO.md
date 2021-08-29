@@ -1,3 +1,0 @@
-- job to trim names
-- text file for relationships
-- none of my info / family's relationship info is in there

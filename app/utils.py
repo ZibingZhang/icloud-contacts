@@ -1,4 +1,5 @@
 import json
+import uuid
 import yaml
 from app import utils
 from app.fields import *
@@ -56,21 +57,31 @@ def delete_none(dict_):
 
 
 def format_notes(notes):
-    notes_dict = notes if isinstance(notes, dict) else json.loads(notes)
+    if isinstance(notes, dict):
+        notes_dict = dict(notes)
+    elif isinstance(notes, Notes):
+        notes_dict = notes.to_dict()
+    else:
+        notes_dict = json.loads(notes)
+    notes_dict = delete_none(notes_dict)
+
     try:
         notes_meta = notes_dict.pop("meta")
     except KeyError:
         notes_meta = None
+
     if len(notes_dict.keys()) == 0:
         output = ""
     else:
         notes_json = json.dumps(utils.delete_none(notes_dict), ensure_ascii=False)
         output = json_to_yaml(notes_json)
+
     if notes_meta is not None:
         notes_meta_json = json.dumps(
             {"meta": utils.delete_none(notes_meta)}, ensure_ascii=False
         )
         output += json_to_yaml(notes_meta_json)
+
     return output
 
 
@@ -95,3 +106,7 @@ def print_name_and_company(contact, more=""):
     print(
         f'{contact.get(FIRST_NAME, ""):15s}{contact.get(LAST_NAME, ""):15s}{contact.get(COMPANY_NAME, ""):30s}{more}'
     )
+
+
+def generate_uuid():
+    return str(uuid.uuid4())[:13]

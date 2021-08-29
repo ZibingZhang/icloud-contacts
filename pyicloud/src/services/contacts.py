@@ -2,7 +2,7 @@
 from __future__ import absolute_import
 import json
 import re
-from app import utils
+import uuid
 
 
 class ContactsService(object):
@@ -36,21 +36,36 @@ class ContactsService(object):
     def sync_token(self):
         return f"{self.sync_token_prefix}{self.sync_token_number}"
 
-    def set(self, updated_contact):
+    def create(self, new_contact):
+        """
+        Creates a contact.
+        """
+        self.refresh_tokens()
+        new_contact["contactId"] = str(uuid.uuid4())
+        body = self._singleton_contact_body(new_contact)
+        params = dict(self.params)
+        params.update(
+            {
+                "prefToken": self.pref_token,
+                "syncToken": self.sync_token,
+            }
+        )
+        req = self.session.post(
+            self._contacts_update_url,
+            params=params,
+            data=json.dumps(body),
+        )
+        self._update_sync_token(req.json()["syncToken"])
+
+    def update(self, updated_contact):
         """
         Updates a contact.
         """
         self.refresh_tokens()
         self._update_contact_etag(updated_contact)
-        body = {"contacts": [updated_contact]}
-        try:
-            updated_contact.update(
-                {"notes": utils.format_notes(updated_contact["notes"])}
-            )
-        except (KeyError, json.JSONDecodeError):
-            pass
-        params_contacts = dict(self.params)
-        params_contacts.update(
+        body = self._singleton_contact_body(updated_contact)
+        params = dict(self.params)
+        params.update(
             {
                 "method": "PUT",
                 "prefToken": self.pref_token,
@@ -59,7 +74,7 @@ class ContactsService(object):
         )
         req = self.session.post(
             self._contacts_update_url,
-            params=params_contacts,
+            params=params,
             data=json.dumps(body),
         )
         self._update_sync_token(req.json()["syncToken"])
@@ -107,3 +122,7 @@ class ContactsService(object):
         else:
             etag = re.sub(r"^C=\d+", f"C={self.sync_token_number}", etag)
             contact.update({"etag": etag})
+
+    @staticmethod
+    def _singleton_contact_body(contact):
+        return {"contacts": [contact]}

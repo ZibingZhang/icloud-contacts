@@ -1,5 +1,3 @@
-import uuid
-import yaml
 from app import utils
 from app.jobs import NotesBaseJob
 from app.notes import *
@@ -18,5 +16,5 @@ class GenerateUUIDJob(NotesBaseJob):
         updated_notes = notes
         if updated_notes is None:
             updated_notes = Notes()
-        updated_notes.meta = Meta(uuid=str(uuid.uuid4())[:13])
+        updated_notes.meta = Meta(uuid=utils.generate_uuid())
         return updated_notes
