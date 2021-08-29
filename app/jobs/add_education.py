@@ -1,29 +1,25 @@
-from app import utils
 from app.contact import *
-from app.fields import *
-from app.jobs import NotesBaseJob
+from app.jobs import BaseJob
 
 
-class AddEducationJob(NotesBaseJob):
+class AddEducationJob(BaseJob):
     school = Education()
 
     def predicate(self, contact):
-        notes = utils.notes_from_contact(contact)
-        return notes.education is None
+        return contact.notes.education is None
 
     def mapper(self, contact):
         utils.print_name_and_company(contact)
-        return super().mapper(contact)
-
-    def notes_mapper(self, notes: Optional[Notes]):
+        education = contact.notes.education
         school = utils.prompt()
         if school == "":
-            return notes
-        if notes.education is None:
-            notes.education = Education()
+            return
+        if education is None:
+            education = Education()
         if ";" in school:
             name, year = school.split(";")
-            notes.education.bachelor = School(name=name, grad_year=int(year))
+            education.bachelor = School(name=name, grad_year=int(year))
         else:
-            notes.education.bachelor = School(name=school)
-        return notes
+            education.bachelor = School(name=school)
+        contact.notes.education = education
+        return contact

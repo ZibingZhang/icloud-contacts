@@ -1,11 +1,9 @@
-from app.contact import *
-from app.fields import *
-from app.jobs import NotesBaseJob
+from app.jobs import BaseJob
 
 
-class FormatNotesJob(NotesBaseJob):
+class FormatNotesJob(BaseJob):
     def predicate(self, contact):
-        return contact.get(NOTES) is not None
+        return contact.notes is not None
 
-    def notes_mapper(self, notes: Optional[Notes]):
-        return notes
+    def mapper(self, contact):
+        return contact

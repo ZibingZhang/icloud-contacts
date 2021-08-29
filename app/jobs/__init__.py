@@ -1,13 +1,7 @@
-import abc
-from typing import Optional, Any
-from app import utils
-from app.contact import Notes
-
-
 class JobMeta(type):
     # https://stackoverflow.com/questions/44029167/how-to-run-a-method-before-after-all-class-function-calls-with-arguments-passed/
     # https://stackoverflow.com/questions/392160/what-are-some-concrete-use-cases-for-metaclasses
-    def __new__(mcs, name, bases, dct) -> Any:
+    def __new__(mcs, name, bases, dct):
         if "predicate" in dct:
             dct["predicate"] = JobMeta._wrap_predicate(dct["predicate"])
         if "run" in dct:
@@ -62,10 +56,9 @@ class BaseJob(metaclass=JobMeta):
         self.client.filter_map(self.predicate, self.mapper, preview=preview)
 
     def before_run(self, *args, **kwargs):
-        contacts = self.client.all()
+        contacts = self.client.read()
         for contact in contacts:
-            notes = utils.notes_from_contact(contact)
-            uuid = notes.meta.uuid
+            uuid = contact.notes.meta.uuid
             self.uuids[uuid] = contact
 
     def after_run(self, *args, **kwargs):
@@ -78,23 +71,6 @@ class BaseJob(metaclass=JobMeta):
         return contact
 
 
-class NotesBaseJob(BaseJob):
-    def mapper(self, contact):
-        notes = utils.notes_from_contact(contact)
-        updated_notes = self.notes_mapper(notes)
-        if updated_notes is not None:
-            updated_notes = updated_notes.to_dict()
-            contact.update(
-                {"notes": utils.format_notes(utils.delete_none(updated_notes))}
-            )
-        return contact
-
-    @abc.abstractmethod
-    def notes_mapper(self, notes: Optional[Notes]):
-        pass
-
-
-from app.jobs.scratch import ScratchJob, ScratchNotesJob
 from app.jobs.add_education import AddEducationJob
 from app.jobs.add_education_from_tag import AddEducationFromTagJob
 from app.jobs.add_family import AddFamilyJob

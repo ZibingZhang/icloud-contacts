@@ -1,9 +1,6 @@
 import json
 import uuid
-import yaml
-from app import utils
 from app.contact import *
-from app.fields import *
 
 
 # puts keys on new line with additional indentation
@@ -22,24 +19,18 @@ class Dumper(yaml.Dumper):
         super().write_plain(text, split)
 
 
-def strip_for_reading(contact):
-    stripped_contact = dict(contact)
+def json_for_reading(contact):
+    stripped_contact = delete_none(contact.to_dict())
     for field in {
-        CONTACT_ID,
-        E_TAG,
-        IS_COMPANY,
-        IS_GUARDIAN_APPROVED,
-        NORMALIZED,
-        WHITELISTED,
+        "contactId",
+        "eTag",
+        "isCompany",
+        "isGuardianApproved",
+        "normalized",
+        "whitelisted",
     }:
         stripped_contact.pop(field, None)
-    try:
-        notes = contact["notes"]
-        if not isinstance(notes, dict):
-            notes = dict(yaml.safe_load(notes))
-        stripped_contact["notes"] = json.dumps(notes, ensure_ascii=False)
-    except (KeyError, json.JSONDecodeError):
-        pass
+    stripped_contact["notes"] = delete_none(contact.notes.to_dict())
     return stripped_contact
 
 
@@ -57,12 +48,7 @@ def delete_none(dict_):
 
 
 def format_notes(notes):
-    if isinstance(notes, dict):
-        notes_dict = dict(notes)
-    elif isinstance(notes, Notes):
-        notes_dict = notes.to_dict()
-    else:
-        notes_dict = json.loads(notes)
+    notes_dict = notes.to_dict()
     notes_dict = delete_none(notes_dict)
 
     try:
@@ -73,12 +59,12 @@ def format_notes(notes):
     if len(notes_dict.keys()) == 0:
         output = ""
     else:
-        notes_json = json.dumps(utils.delete_none(notes_dict), ensure_ascii=False)
+        notes_json = json.dumps(delete_none(notes_dict), ensure_ascii=False)
         output = json_to_yaml(notes_json)
 
     if notes_meta is not None:
         notes_meta_json = json.dumps(
-            {"meta": utils.delete_none(notes_meta)}, ensure_ascii=False
+            {"meta": delete_none(notes_meta)}, ensure_ascii=False
         )
         output += json_to_yaml(notes_meta_json)
 
@@ -104,9 +90,13 @@ def json_to_yaml(json_):
 
 def print_name_and_company(contact, more=""):
     print(
-        f'{contact.get(FIRST_NAME, ""):15s}{contact.get(LAST_NAME, ""):15s}{contact.get(COMPANY_NAME, ""):30s}{more}'
+        f'{str(contact.first_name):15s}{str(contact.last_name):15s}{str(contact.company_name):40s}{more}'
     )
 
 
 def generate_uuid():
     return str(uuid.uuid4())[:13]
+
+
+def contact_to_json(contact):
+    return json.dumps(delete_none(contact.to_dict()))

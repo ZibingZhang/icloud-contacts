@@ -1,15 +1,14 @@
 import json
 import sys
 import time
-from app import utils
 from app.contact import *
-from app.fields import *
 from pyicloud.src import PyiCloudService
 
 
 class ContactsClient:
     def __init__(self):
         self.contacts_service = self._login()
+        self.contacts = []
 
     def create(self, contact):
         """
@@ -24,8 +23,8 @@ class ContactsClient:
         """
         Fetches all the contacts.
         """
-        self.contacts_service.refresh_contacts()
-        return self.contacts_service.contacts
+        self._refresh_contacts()
+        return self.contacts
 
     def update(self, contact):
         formatted_contact = self._format_notes(contact)
@@ -38,7 +37,7 @@ class ContactsClient:
         contacts = self.read()
         with open(filename, "w") as f:
             for contact in contacts:
-                f.write(f"{json.dumps(contact)}\n")
+                f.write(f"{utils.contact_to_json(contact)}\n")
 
     def filter_map(
         self,
@@ -51,15 +50,15 @@ class ContactsClient:
         """
         Updates many contacts.
         """
-        self.contacts_service.refresh_contacts()
-        self.contacts_service.refresh_tokens()
-        filtered_contacts = list(filter(predicate, self.contacts_service.contacts))
+        self._refresh_contacts()
+        self._refresh_tokens()
+        filtered_contacts = list(filter(predicate, self.contacts))
         print(
             f"You are processing {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
         )
         input("Press enter to continue...\n")
         for contact in filtered_contacts:
-            old_contact = dict(contact)
+            old_contact = Contact.from_dict(contact.to_dict())
             updated_contact = mapper(contact)
             if updated_contact is None or old_contact == updated_contact:
                 continue
@@ -67,8 +66,15 @@ class ContactsClient:
                 time.sleep(delay)
                 self.update(updated_contact)
             out.write(
-                f"Updated {utils.strip_for_reading(old_contact)} to {utils.strip_for_reading(updated_contact)}\n"
+                f"Updated {utils.json_for_reading(old_contact)} to {utils.json_for_reading(updated_contact)}\n"
             )
+
+    def _refresh_contacts(self):
+        self.contacts_service.refresh_contacts()
+        self.contacts = list(map(Contact.from_dict, self.contacts_service.contacts))
+
+    def _refresh_tokens(self):
+        self.contacts_service.refresh_tokens()
 
     @staticmethod
     def _login():
@@ -134,20 +140,20 @@ class ContactsClient:
     def _format_notes(contact):
         formatted_contact = dict(contact)
         try:
-            formatted_contact.update({"notes": utils.format_notes(contact["notes"])})
+            formatted_contact.update({"notes": utils.format_notes(contact.notes)})
         except (KeyError, json.JSONDecodeError):
             pass
         return formatted_contact
 
     @staticmethod
     def _generate_uuid(contact):
-        notes = contact.get(NOTES, Notes())
-        if notes.meta is None:
-            notes.meta = Meta()
-        if notes.meta.uuid is None:
-            notes.meta.uuid = utils.generate_uuid()
-        contact[NOTES] = notes
+        meta = contact.notes.meta
+        if meta is None:
+            meta = Meta()
+        if meta.uuid is None:
+            meta.uuid = utils.generate_uuid()
+        contact.notes.meta = meta
 
     @staticmethod
     def _set_required_fields(contact):
-        contact[IS_COMPANY] = False
+        contact.is_company = False

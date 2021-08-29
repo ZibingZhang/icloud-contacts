@@ -1,22 +1,17 @@
-from app import utils
-from app.fields import *
-from app.jobs import NotesBaseJob
+from app.jobs import BaseJob
 from app.contact import *
 
 
-class AddFriendsFriendJob(NotesBaseJob):
+class AddFriendsFriendJob(BaseJob):
     def predicate(self, contact):
         return False
 
     def mapper(self, contact):
-        print(utils.strip_for_reading(contact))
-        return super().mapper(contact)
-
-    def notes_mapper(self, notes: Optional[Notes]):
+        utils.print_name_and_company(contact)
         uuid = utils.prompt()
         if uuid == "":
-            return notes
-        contact = self.uuids[uuid]
-        name = f"{contact.get(FIRST_NAME)} {contact.get(LAST_NAME)}"
-        notes.friends_friend = RelatedContact(name=name, uuid=uuid)
-        return notes
+            return
+        friend_contact = self.uuids[uuid]
+        name = f"{friend_contact.first_name} {friend_contact.last_name}"
+        contact.notes.friends_friend = RelatedContact(name=name, uuid=uuid)
+        return contact

@@ -1,21 +1,16 @@
-from app import utils
 from app.contact import *
-from app.fields import *
-from app.jobs import NotesBaseJob
+from app.jobs import BaseJob
 
 
-class AddEducationFromTagJob(NotesBaseJob):
+class AddEducationFromTagJob(BaseJob):
     school = Education()
 
     def predicate(self, contact):
         return any(
-            map(lambda tag: "SCHOOL" in tag, contact.get(COMPANY_NAME, "").split(", "))
+            map(lambda tag: "SCHOOL" in tag, contact.company_name.split(", "))
         )
 
     def mapper(self, contact):
-        print(utils.strip_for_reading(contact))
-        return super().mapper(contact)
-
-    def notes_mapper(self, notes: Optional[Notes]):
-        notes.education = Education()
-        return notes
+        utils.print_name_and_company(contact)
+        contact.notes.education = Education()
+        return contact

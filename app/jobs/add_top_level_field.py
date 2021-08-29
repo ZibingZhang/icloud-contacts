@@ -1,11 +1,9 @@
 from app import utils
-from app.fields import *
 from app.jobs import BaseJob
 
 
 class AddTopLevelFieldJob(BaseJob):
     def predicate(self, contact):
-        notes = utils.notes_from_contact(contact)
         return False
 
     def mapper(self, contact):
@@ -13,11 +11,11 @@ class AddTopLevelFieldJob(BaseJob):
 
 
 def add_birthday(contact):
-    utils.print_name_and_company(contact, contact.get(BIRTHDAY))
-    bday = utils.prompt()
-    if bday == "":
+    utils.print_name_and_company(contact, contact.birthday)
+    birthday = utils.prompt()
+    if birthday == "":
         return
-    contact[BIRTHDAY] = bday
+    contact.birthday = birthday
 
 
 def add_last_name(contact):
@@ -27,22 +25,25 @@ def add_last_name(contact):
         return
     elif name.count(";") == 1:
         first, last = name.split(";")
-        contact.update({FIRST_NAME: first, LAST_NAME: last})
+        contact.first_name = first
+        contact.last_name = last
     elif name.count(";") == 2:
         first, nick, last = name.split(";")
-        contact.update({FIRST_NAME: first, NICK_NAME: nick, LAST_NAME: last})
+        contact.first_name = first
+        contact.nick_name = nick
+        contact.last_name = last
     else:
-        contact.update({LAST_NAME: name})
+        contact.last_name = name
 
 
 def add_nick_name(contact):
-    utils.print_name_and_company(contact, contact.get(NICK_NAME))
+    utils.print_name_and_company(contact, contact.nick_name)
     name = utils.prompt()
     if name == "":
         return
     if ";" in name:
         first, nick = name.split(";")
-        contact[FIRST_NAME] = first
-        contact[NICK_NAME] = nick
+        contact.first_name = first
+        contact.nick_name = nick
     else:
-        contact[NICK_NAME] = name
+        contact.nick_name = name

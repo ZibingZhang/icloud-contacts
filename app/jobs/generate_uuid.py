@@ -1,20 +1,20 @@
-from app import utils
 from app.contact import *
-from app.jobs import NotesBaseJob
+from app.jobs import BaseJob
 
 
-class GenerateUUIDJob(NotesBaseJob):
+class GenerateUUIDJob(BaseJob):
     def predicate(self, contact):
-        super().predicate(contact)
         try:
-            notes = utils.notes_from_contact(contact)
-            return notes.meta is None or notes.meta.uuid is None
-        except KeyError:
+            return contact.notes.meta.uuid is None
+        except AttributeError:
             return True
 
-    def notes_mapper(self, notes: Optional[Notes]):
-        updated_notes = notes
+    def mapper(self, contact):
+        updated_notes = contact.notes
         if updated_notes is None:
             updated_notes = Notes()
-        updated_notes.meta = Meta(uuid=utils.generate_uuid())
-        return updated_notes
+        if updated_notes.meta is None:
+            updated_notes.meta = Meta()
+        updated_notes.meta.uuid = utils.generate_uuid()
+        contact.notes = updated_notes
+        return contact
