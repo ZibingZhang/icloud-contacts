@@ -52,6 +52,7 @@ class Favorite:
 @dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
 @dataclass
 class Meta:
+    tags: Optional[List[str]] = None
     uuid: Optional[str] = None
 
 

@@ -42,7 +42,7 @@ def delete_none(dict_):
         elif value is None:
             del dict_[key]
         elif isinstance(value, list):
-            for v_i in value:
+            for v_i in filter(lambda v: isinstance(v, dict), value):
                 delete_none(v_i)
     return dict_
 

@@ -7,12 +7,12 @@ from app.jobs import BaseJob
 
 class SyncGroupsJob(BaseJob):
     def run(self, preview=True):
-        existing_groups = self.client.groups
+        existing_groups = self.client.groups()
         existing_group_names = map(lambda group: group.name, existing_groups)
         for group_def in config.GROUP_DEFINITIONS:
             satisfied_contact_ids = [
                 contact.contact_id
-                for contact in filter(group_def.condition, self.client.contacts)
+                for contact in filter(group_def.condition, self.client.contacts())
             ]
 
             if group_def.name not in existing_group_names:

@@ -13,12 +13,20 @@ from pyicloud.src import PyiCloudService
 
 
 class ContactsClient:
-    def __init__(self, load_contacts=True):
+    def __init__(self):
         self.service = self._login()
-        self.contacts = []
-        self.groups = []
-        self._load_contacts = load_contacts
-        self._fetch_from_service()
+        self._contacts = []
+        self._groups = []
+
+    def contacts(self, refresh=False):
+        if len(self._contacts) == 0 or refresh:
+            self._refresh_contacts()
+        return self._contacts
+
+    def groups(self, refresh=False):
+        if len(self._groups) == 0 or refresh:
+            self._refresh_groups()
+        return self._groups
 
     def create(self, contact):
         """
@@ -32,8 +40,8 @@ class ContactsClient:
         """
         Fetches all the contacts.
         """
-        self._refresh(refresh_contacts=refresh)
-        return self.contacts
+        self._refresh()
+        return self._contacts
 
     def update(self, contact):
         contact_dict = self._contact_to_dict(contact)
@@ -65,7 +73,7 @@ class ContactsClient:
         """
         Updates many contacts.
         """
-        filtered_contacts = list(filter(predicate, self.contacts))
+        filtered_contacts = list(filter(predicate, self.contacts()))
         print(
             f"You are processing {len(filtered_contacts)} contacts {'(preview)' if preview else ''}"
         )
@@ -82,14 +90,16 @@ class ContactsClient:
                 f"Updated {utils.json_for_reading(old_contact)} to {utils.json_for_reading(updated_contact)}\n"
             )
 
-    def _refresh(self, refresh_contacts=False):
-        self.service.refresh(refresh_contacts=refresh_contacts)
-        self._fetch_from_service()
+    def _refresh(self):
+        self.service.refresh()
+        self._refresh_contacts()
+        self._refresh_groups()
 
-    def _fetch_from_service(self):
-        if self._load_contacts:
-            self.contacts = list(map(Contact.from_dict, self.service.contacts))
-        self.groups = list(map(Group.from_dict, self.service.groups))
+    def _refresh_contacts(self):
+        self._contacts = list(map(Contact.from_dict, self.service.contacts))
+
+    def _refresh_groups(self):
+        self._groups = list(map(Group.from_dict, self.service.groups))
 
     @staticmethod
     def _login():

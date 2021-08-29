@@ -22,7 +22,7 @@ class ContactsService(object):
         self._groups_endpoint = "%s/groups" % self._contacts_endpoint
         self._groups_update_url = "%s/card" % self._groups_endpoint
 
-        self.contacts = []
+        self._contacts = {}
         self.groups = []
         self.pref_token = ""
         self.sync_token_prefix = ""
@@ -35,7 +35,11 @@ class ContactsService(object):
             }
         )
 
-        self.refresh(refresh_contacts=True)
+        self.refresh()
+
+    @property
+    def contacts(self):
+        return list(self._contacts.values())
 
     @property
     def sync_token(self):
@@ -54,12 +58,13 @@ class ContactsService(object):
                 "syncToken": self.sync_token,
             }
         )
-        req = self.session.post(
+        resp = self.session.post(
             self._contacts_update_url,
             params=params,
             data=json.dumps(body),
-        )
-        self._update_sync_token(req.json()["syncToken"])
+        ).json()
+        self._update_sync_token(resp["syncToken"])
+        self._update_contacts(resp["contacts"])
 
     def update(self, updated_contact):
         """
@@ -75,12 +80,13 @@ class ContactsService(object):
                 "syncToken": self.sync_token,
             }
         )
-        req = self.session.post(
+        resp = self.session.post(
             self._contacts_update_url,
             params=params,
             data=json.dumps(body),
-        )
-        self._update_sync_token(req.json()["syncToken"])
+        ).json()
+        self._update_sync_token(resp["syncToken"])
+        self._update_contacts(resp["contacts"])
 
     def create_group(self, group):
         """
@@ -95,12 +101,12 @@ class ContactsService(object):
                 "syncToken": self.sync_token,
             }
         )
-        req = self.session.post(
+        resp = self.session.post(
             self._groups_update_url,
             params=params,
             data=json.dumps(body),
-        )
-        self._update_sync_token(req.json()["syncToken"])
+        ).json()
+        self._update_sync_token(resp["syncToken"])
 
     def delete_group(self, group):
         """
@@ -116,14 +122,14 @@ class ContactsService(object):
                 "syncToken": self.sync_token,
             }
         )
-        req = self.session.post(
+        resp = self.session.post(
             self._groups_update_url,
             params=params,
             data=json.dumps(body),
-        )
-        self._update_sync_token(req.json()["syncToken"])
+        ).json()
+        self._update_sync_token(resp["syncToken"])
 
-    def refresh(self, refresh_contacts=False):
+    def refresh(self):
         """
         Updated the services contacts, groups, and tokens.
         """
@@ -140,20 +146,19 @@ class ContactsService(object):
         self._update_sync_token(resp["syncToken"])
         self.groups = resp["groups"]
 
-        if refresh_contacts:
-            params_contacts = dict(self.params)
-            params_contacts.update(
-                {
-                    "prefToken": self.pref_token,
-                    "syncToken": self.sync_token,
-                    "limit": "0",
-                    "offset": "0",
-                }
-            )
-            resp = self.session.get(
-                self._contacts_next_url, params=params_contacts
-            ).json()
-            self.contacts = resp["contacts"]
+        params_contacts = dict(self.params)
+        params_contacts.update(
+            {
+                "prefToken": self.pref_token,
+                "syncToken": self.sync_token,
+                "limit": "0",
+                "offset": "0",
+            }
+        )
+        resp = self.session.get(
+            self._contacts_next_url, params=params_contacts
+        ).json()
+        self._update_contacts(resp["contacts"])
 
     def _update_sync_token(self, sync_token):
         self.sync_token_prefix = re.search(r"^.*S=", sync_token)[0]
@@ -167,6 +172,10 @@ class ContactsService(object):
         else:
             etag = re.sub(r"^C=\d+", f"C={self.sync_token_number}", etag)
             obj.update({"etag": etag})
+
+    def _update_contacts(self, contacts):
+        for contact in contacts:
+            self._contacts[contact["contactId"]] = contact
 
     @staticmethod
     def _singleton_contact_body(contact):

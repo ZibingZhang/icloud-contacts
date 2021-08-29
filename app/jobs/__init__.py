@@ -16,7 +16,7 @@ class JobMeta(type):
         def enhanced_predicate(*args, **kwargs):
             try:
                 return predicate(*args, **kwargs)
-            except (AttributeError, IndexError, KeyError):
+            except (AttributeError, IndexError, KeyError, TypeError):
                 return False
 
         return enhanced_predicate
@@ -56,7 +56,7 @@ class BaseJob(metaclass=JobMeta):
         self.client.filter_map(self.predicate, self.mapper, preview=preview)
 
     def before_run(self, *args, **kwargs):
-        for contact in self.client.contacts:
+        for contact in self.client.contacts():
             uuid = contact.notes.meta.uuid
             self.uuids[uuid] = contact
 
