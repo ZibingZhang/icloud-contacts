@@ -1,6 +1,6 @@
+from app.dataclasses import *
 from app.fields import *
 from app.jobs import NotesBaseJob
-from app.notes import *
 
 
 class FormatNotesJob(NotesBaseJob):

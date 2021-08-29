@@ -2,8 +2,8 @@ import json
 import sys
 import time
 from app import utils
+from app.dataclasses import *
 from app.fields import *
-from app.notes import *
 from pyicloud.src import PyiCloudService
 
 

@@ -1,7 +1,7 @@
 import abc
 from typing import Optional, Any
 from app import utils
-from app.notes import Notes
+from app.dataclasses import Notes
 
 
 class JobMeta(type):
