@@ -155,9 +155,7 @@ class ContactsService(object):
                 "offset": "0",
             }
         )
-        resp = self.session.get(
-            self._contacts_next_url, params=params_contacts
-        ).json()
+        resp = self.session.get(self._contacts_next_url, params=params_contacts).json()
         self._update_contacts(resp["contacts"])
 
     def _update_sync_token(self, sync_token):
