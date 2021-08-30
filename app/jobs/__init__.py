@@ -1,5 +1,6 @@
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 import typing
+from app import utils
 
 if typing.TYPE_CHECKING:
     from app.cilent import ContactsClient
@@ -11,23 +12,13 @@ class JobMeta(type):
     # https://stackoverflow.com/questions/392160/what-are-some-concrete-use-cases-for-metaclasses
     def __new__(mcs, name: str, bases: Tuple[type], dct: dict) -> type:
         if "predicate" in dct:
-            dct["predicate"] = JobMeta._wrap_predicate(dct["predicate"])
+            dct["predicate"] = utils.false_on_error(dct["predicate"])
         if "run" in dct:
             dct["before_run"] = JobMeta._get_required_method("before_run", bases, dct)
             dct["after_run"] = JobMeta._get_required_method("after_run", bases, dct)
             dct["run"] = JobMeta._wrap_run(dct["run"])
 
         return super().__new__(mcs, name, bases, dct)
-
-    @staticmethod
-    def _wrap_predicate(predicate: Callable[[Any], bool]) -> Callable[[Any], bool]:
-        def enhanced_predicate(*args, **kwargs):
-            try:
-                return predicate(*args, **kwargs)
-            except (AttributeError, IndexError, KeyError, TypeError):
-                return False
-
-        return enhanced_predicate
 
     @staticmethod
     def _wrap_run(run: callable) -> callable:

@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Callable, Union
 import json
 import typing
 import uuid
@@ -101,3 +101,15 @@ def generate_uuid() -> str:
 
 def contact_to_json(contact: "Contact") -> str:
     return json.dumps(delete_none(contact.to_dict()))
+
+
+def false_on_error(
+    condition: Callable[["Contact"], bool]
+) -> Callable[["Contact"], bool]:
+    def decorated_condition(contact: "Contact") -> bool:
+        try:
+            return condition(contact)
+        except:
+            return False
+
+    return decorated_condition
