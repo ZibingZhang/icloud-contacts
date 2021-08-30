@@ -103,9 +103,7 @@ def contact_to_json(contact: "Contact") -> str:
     return json.dumps(delete_none(contact.to_dict()))
 
 
-def false_on_error(
-    condition: Callable[[Any], bool]
-) -> Callable[[Any], bool]:
+def false_on_error(condition: Callable[[Any], bool]) -> Callable[[Any], bool]:
     def decorated_condition(*args, **kwargs) -> bool:
         try:
             return condition(*args, **kwargs)

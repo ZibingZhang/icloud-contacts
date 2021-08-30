@@ -85,9 +85,7 @@ class FormatPhoneNumberJob(BaseJob):
                 country_code = groups[0]
                 body_1 = groups[1]
                 body_2 = groups[2]
-                new_phones.append(
-                    Phone(f"+{country_code} {body_1} {body_2}", label)
-                )
+                new_phones.append(Phone(f"+{country_code} {body_1} {body_2}", label))
             else:
                 new_phones.append(phone)
 
