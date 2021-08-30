@@ -1,4 +1,4 @@
-from typing import Callable, Union
+from typing import Any, Callable, Union
 import json
 import typing
 import uuid
@@ -104,11 +104,11 @@ def contact_to_json(contact: "Contact") -> str:
 
 
 def false_on_error(
-    condition: Callable[["Contact"], bool]
-) -> Callable[["Contact"], bool]:
-    def decorated_condition(contact: "Contact") -> bool:
+    condition: Callable[[Any], bool]
+) -> Callable[[Any], bool]:
+    def decorated_condition(*args, **kwargs) -> bool:
         try:
-            return condition(contact)
+            return condition(*args, **kwargs)
         except:
             return False
 
