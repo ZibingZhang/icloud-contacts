@@ -20,8 +20,8 @@ def reflect_none(fn: Callable[[Any], Any]) -> Callable[[Any], Any]:
 @dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
 @dataclass
 class RelatedContact:
-    name: Optional[str] = None
-    uuid: Optional[str] = None
+    name: str
+    uuid: str
 
 
 @dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
@@ -76,6 +76,13 @@ class Partner:
 
 @dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
 @dataclass
+class Sharks:
+    years_coached: List[int] = None
+    years_swam: List[int] = None
+
+
+@dataclass_json(letter_case=LetterCase.SNAKE, undefined=Undefined.RAISE)
+@dataclass
 class Notes:
     chinese_name: Optional[str] = None
     comment: Optional[str] = None
@@ -85,6 +92,7 @@ class Notes:
     friends_friend: Optional[RelatedContact] = None
     meta: Optional[Meta] = None
     partner: Optional[Partner] = None
+    sharks: Optional[Sharks] = None
 
 
 @reflect_none
