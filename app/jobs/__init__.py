@@ -86,6 +86,7 @@ from app.jobs.add_top_level_field import AddTopLevelFieldJob
 from app.jobs.format_phone_numbers import FormatPhoneNumberJob
 from app.jobs.format_notes import FormatNotesJob
 from app.jobs.generate_uuid import GenerateUUIDJob
+from app.jobs.list_recently_edited import ListRecentlyEditedJob
 from app.jobs.manually_edit_company import ManuallyEditCompanyJob
 from app.jobs.scratch import ScratchJob
 from app.jobs.sync_groups import SyncGroupsJob
