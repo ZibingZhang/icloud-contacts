@@ -4,11 +4,11 @@ from typing import List, Optional
 
 @dataclass
 class FamilyDefinition:
-    father: Optional[str]
-    mother: Optional[str]
-    sons: Optional[List[str]]
-    daughters: Optional[List[str]]
-    cousins: Optional[List[str]]
+    father: Optional[str] = None
+    mother: Optional[str] = None
+    sons: Optional[List[str]] = None
+    daughters: Optional[List[str]] = None
+    cousins: Optional[List[str]] = None
 
 
 @dataclass
