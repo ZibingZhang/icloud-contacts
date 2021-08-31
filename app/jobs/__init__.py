@@ -71,7 +71,6 @@ class BaseJob(metaclass=JobMeta):
 
 from app.jobs.add_education import AddEducationJob
 from app.jobs.add_education_from_tag import AddEducationFromTagJob
-from app.jobs.add_family import AddFamilyJob
 from app.jobs.add_friends_friend import AddFriendsFriendJob
 from app.jobs.add_top_level_field import AddTopLevelFieldJob
 from app.jobs.format_phone_numbers import FormatPhoneNumberJob
@@ -80,4 +79,5 @@ from app.jobs.generate_uuid import GenerateUUIDJob
 from app.jobs.list_recently_edited import ListRecentlyEditedJob
 from app.jobs.manually_edit_company import ManuallyEditCompanyJob
 from app.jobs.scratch import ScratchJob
+from app.jobs.sync_families import SyncFamilyJob
 from app.jobs.sync_groups import SyncGroupsJob
