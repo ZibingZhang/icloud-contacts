@@ -6,7 +6,7 @@ from app.jobs import BaseJob
 class SyncGroupsJob(BaseJob):
     def run(self, preview: bool = True) -> None:
         existing_groups = self.client.groups()
-        existing_group_names = map(lambda group: group.name, existing_groups)
+        existing_group_names = list(map(lambda group: group.name, existing_groups))
         for group_def in config.GROUP_DEFINITIONS:
             satisfied_contact_ids = [
                 contact.contact_id
